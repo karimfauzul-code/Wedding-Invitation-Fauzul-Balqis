@@ -1,0 +1,1405 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Wedding — Fauzul & Balqis</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#fff; --muted:#8a8a8a; --accent:#E50914; --nav:#fff; }
+html,body{height:100%;margin:0;background:var(--bg);font-family:Montserrat,system-ui,Arial;}
+.app{max-width:540px;margin:0 auto;height:100vh;display:flex;flex-direction:column;border-left:1px solid #eee;border-right:1px solid #eee;background:#fff}
+
+/* LOGIN */
+.login-screen{display:flex;flex-direction:column;align-items:center;padding:28px;gap:18px;flex:1;justify-content:center}
+.login-avatar img{width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:15px;border:3px solid #ddd}
+.login-username{font-weight:700;font-size:18px;color:#111}
+.input-wrap{width:92%;max-width:420px;position:relative}
+input[type="text"]{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:12px;font-size:15px;box-sizing:border-box}
+.login-btn{width:92%;max-width:420px;padding:12px;border-radius:14px;background:linear-gradient(90deg,#e50914,#ff4b4b);color:#fff;border:none;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+.small-muted{color:var(--muted);font-size:13px;margin-top:6px;text-align:center}
+
+/* FEED */
+.hidden{display:none !important}
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #eee}
+.logo-small{font-family:'Pacifico', cursive;font-size:26px}
+.top-icons{display:flex;gap:14px;font-size:20px}
+.feed{flex:1;overflow:auto;background:#fafafa;padding-bottom:90px}
+
+/* STORIES */
+.stories{display:flex;gap:14px;align-items:center;padding:12px;border-bottom:1px solid #f0f0f0;background:#fff;overflow:auto}
+.story{width:100px;flex:0 0 90px;text-align:center;font-size:12px}
+.story span{font-size:12px;margin-top:5px;text-align:center;display:block}
+
+/* Cerita Anda (abu-abu, tanpa foto) */
+.story-add{width:80px;height:80px;border-radius:50%;border:3px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:30px;color:#999;background:#f5f5f5;margin:0 auto}
+
+/* Story dengan gradasi IG */
+.story-ring{padding:3px;border-radius:50%;background:linear-gradient(45deg,#f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);margin:0 auto}
+.story-ring img{width:80px;height:80px;border-radius:50%;border:3px solid #fff;object-fit:cover;display:block}
+
+.post{background:#fff;margin:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.03);overflow:hidden}
+.post .meta{display:flex;align-items:center;gap:10px;padding:10px}
+.post .meta .avatar{width:40px;height:40px;border-radius:50%;background:#ddd;flex:0 0 40px;overflow:hidden;background-size:cover;background-position:center}
+.post .meta .u .name{font-weight:700}
+.post .image{width:100%;height:420px;background:#eee;background-size:cover;background-position:center;cursor:pointer}
+.post .actions{display:flex;gap:14px;padding:10px;font-size:22px}
+.caption{padding:0 12px 16px;color:#222;font-size:15px;line-height:1.45}
+.caption b{font-weight:700}
+
+.bnav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:center;padding:8px 0;background:var(--nav);border-top:1px solid #eee;max-width:540px;margin:0 auto}
+.bnav button{background:none;border:none;font-size:20px;cursor:pointer;color:#222}
+
+/* modal & viewer */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:999}
+.modal{width:92%;max-width:420px;background:#000;border-radius:12px;overflow:hidden}
+.modal img{width:100%;height:auto;display:block}
+.modal .meta{padding:10px;color:#fff}
+.viewer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000;z-index:1000}
+.viewer img{max-width:98%;max-height:98%;display:block}
+
+/* Screens */
+.screen{display:none;flex-direction:column;height:100%;width:100%;}
+.screen.active{display:flex;}
+
+/* PERBAIKAN: Topbar disembunyikan di login screen */
+#loginScreen .topbar {
+  display: none !important;
+}
+
+/* PERBAIKAN: Layout profil yang lebih terintegrasi */
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  flex: 1;
+  overflow: auto;
+}
+
+.profile-header {
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.profile-stats div {
+  flex: 1;
+}
+
+.profile-stats .count {
+  font-weight: 700;
+  font-size: 16px;
+  display: block;
+}
+
+.profile-stats .label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.profile-bio {
+  padding: 0 16px 16px;
+}
+
+.profile-bio .name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.profile-bio .username {
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.profile-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.profile-btn.primary {
+  background: #0095f6;
+  color: #fff;
+  border-color: #0095f6;
+}
+
+.profile-highlights {
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.profile-highlights .stories {
+  background: #fff;
+  border-bottom: none;
+  padding: 8px 0;
+}
+
+/* PERBAIKAN: Tambah space di bawah post profile */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: #fafafa;
+  margin-top: 0;
+  padding-bottom: 170px; /* PERBAIKAN: Tambah space di bawah grid */
+}
+
+.profile-post {
+  aspect-ratio: 1;
+  background: #eee;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-post img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* PERBAIKAN: Tambah space di bawah screen gift */
+.gift-content {
+  padding-bottom: 80px; /* PERBAIKAN: Tambah space di bawah konten gift */
+}
+
+/* MESSAGE SCREEN STYLES */
+.message-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.message-back-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.message-title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.message {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.message-sender {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #888;
+  font-weight: normal;
+}
+
+.message-content {
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 80%;
+  align-self: flex-start;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
+  font-size: 15px;
+  line-height: 1.4;
+  position: relative;
+}
+
+.my-message .message-content {
+  background: #e3f2fd;
+  align-self: flex-end;
+}
+
+.delete-btn {
+  background: rgba(229, 9, 20, 0.1);
+  border: 1px solid #e50914;
+  color: #e50914;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 4px;
+  align-self: flex-end;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.message:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background: #e50914;
+  color: white;
+}
+
+.message-input-container {
+  display: flex;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  background: #fff;
+  align-items: center;
+}
+
+.message-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  font-size: 15px;
+  outline: none;
+}
+
+.message-send-btn {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.message-send-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.no-messages {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+  font-style: italic;
+}
+
+.admin-controls {
+  padding: 10px 16px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-btn {
+  background: #e50914;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-btn:hover {
+  background: #c40812;
+}
+
+@media (min-width:720px){
+  .app{border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.06);}
+  .post .image{height:520px}}
+
+.map-container{text-align:center;margin-top:15px;}
+.map-button{display:inline-block;margin-top:12px;background-color:#007bff;color:white;padding:12px 20px;border-radius:8px;font-size:1.1rem;font-weight:600;text-decoration:none;transition:background 0.3s ease;box-shadow:0 2px 5px rgba(0,0,0,0.15);}
+.map-button:hover{background-color:#0056b3;}
+
+/* Notification */
+.notification {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 2000;
+}
+
+/* Delete Confirmation Modal */
+.confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.confirm-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 300px;
+  width: 90%;
+  text-align: center;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.confirm-yes {
+  background: #e50914;
+  color: white;
+}
+
+.confirm-no {
+  background: #ddd;
+  color: #333;
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="screen active">
+    <!-- PERBAIKAN: Topbar disembunyikan di login screen -->
+    <div class="login-screen">
+      <div class="login-avatar">
+        <img src="profile.jpg" alt="Foto Profil">
+      </div>
+      <div class="login-username">@Fauzul_Balqis_Wedding</div>
+      <div class="input-wrap">
+        <input id="guestInput" type="text" placeholder="Input your name" maxlength="25">
+      </div>
+      <button class="login-btn" id="loginBtn">Login</button>
+      <div class="small-muted">The name will be used for messages after login</div>
+      <div class="small-muted" style="margin-top:100px; font-style:italic;"> Created by @Smartro__</div>
+    </div>
+  </div>
+
+  <!-- FEED SCREEN -->
+  <div id="feedScreen" class="screen">
+    <div class="topbar">
+      <div class="logo-small">Wedding</div>
+      <div class="top-icons">
+        ❤️ ✈️
+      </div>
+    </div>
+
+    <div class="feed" id="feed">
+      <div class="stories" id="storiesRow"></div>
+
+      <!-- POST 1 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara untuk hadir pada pernikahan kami. <br>
+            📅 <strong>Jumat, 26 Desember 2025</strong><br>
+            📌 Joglo Asri SKI - Cilegon <br>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 2 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding1.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            Dengan Ridho Allah SWT dan Ridho Orangtua Kami<br>
+            Semoga kami menjadi keluarga yang sakinah mawadah marohma<br>
+            📅 <strong>Jumat, 26 Desember 2025</strong><br>
+            📌 Joglo Asri SKI - Cilegon <br>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 3 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding2.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            👧 Annisa Shinta Balqis, Putri Pertama dari Dua Saudara<br>
+            👨 Ayahanda Abdullah <br>
+            👩 Ibunda Mastuah Handayani<br>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 4 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding3.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            👦 Fauzul Karim Duriyano, Putra Kelima dari Enam Saudara<br>
+            👨 Ayahanda Mashuri<br>
+            👩 Ibunda Mafazah<br>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 5 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding4.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            📅 <strong>Jumat, 26 Desember 2025</strong><br>
+            💍 Akad Nikah (15.00 - 16.30 WIB)<br>
+            🎉 Resepsi Nikah (17.00 - 21.00 WIB)<br>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 6 -->
+      <div class="post">
+        <div class="meta">
+          <div class="avatar" style="background-image:url('profile.jpg')"></div>
+          <div class="u">
+            <div class="name">fauzul_Balqis_wedding</div>
+            <div class="muted" style="font-size:12px;color:var(--muted)">We invite you to join us on our happy day</div>
+          </div>
+        </div>
+        <div class="image" style="background-image:url('foto-wedding5.jpg')"></div>
+        <div class="actions">
+          <span class="likeBtn">♡</span>
+          <span class="commBtn">💬</span>
+          <span class="shareBtn">📤</span>
+        </div>
+        <div class="caption">
+          <b>fauzul_Balqis_wedding</b>
+          <div style="margin-top:8px">
+            🤲🏻 Semoga doa dan kebaikan anda dibalas oleh Allah SWT<br>
+            ✨ Semoga kita sehat selalu dan sukses terus<br>
+            ⚡ Terima Kasih atas waktu dan perhatiannya<br>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="bnav" role="navigation" aria-label="Bottom navigation">
+      <button id="homeBtn" title="Home">🏠</button>
+      <button id="searchBtn" title="Maps">🔍</button>
+      <button id="addBtn" title="Ucapan">💬</button>
+      <button id="playBtn" title="Amplop Digital">▶️</button>
+      <button id="openProfile" title="Profile">👤</button>
+    </div>
+  </div>
+
+  <!-- MAPS SCREEN -->
+  <div id="mapsScreen" class="screen">
+    <div class="topbar">
+      <div class="logo-small">Wedding</div>
+      <div class="top-icons">Maps</div>
+    </div>
+
+    <div class="feed" style="background:#f7f7f7;padding:16px;overflow:auto;">
+      <div style="background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.05);padding:16px;text-align:center;">
+        <iframe 
+          src="https://www.google.com/maps?q=-6.024331509608148, 106.07073402574612&hl=id&z=18&output=embed" 
+          width="100%" height="240" style="border-radius:12px;border:none;">
+        </iframe>
+
+        <h3 style="margin:12px 0 6px 0;">
+          <a href="https://maps.app.goo.gl/2baBbma48BqHSYQK7" 
+             onclick="event.preventDefault(); event.stopPropagation(); window.open(this.href, '_blank');" 
+             style="color:#E50914;text-decoration:none;cursor:pointer;font-weight:700;">
+            📍 Wedding Location
+          </a>
+        </h3>
+
+        <div style="font-size:14px;color:#444;line-height:1.5;">
+          Jl. Raya Cilegon Drangong Serang - Banten Jl. Tol Merak - Jkt Blok No A A, RW.2, Sukmajaya, Kec. Jombang, Kota Cilegon 42416
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="bnav" role="navigation" aria-label="Bottom navigation">
+      <button id="homeBtn2" title="Home">🏠</button>
+      <button id="searchBtn2" title="Maps">🔍</button>
+      <button id="addBtn2" title="Ucapan">💬</button>
+      <button id="playBtn2" title="Amplop Digital">▶️</button>
+      <button id="openProfile2" title="Profile">👤</button>
+    </div>
+  </div>
+
+  <!-- GIFT SCREEN -->
+  <div id="giftScreen" class="screen">
+    <div class="topbar">
+      <div class="logo-small">Wedding</div>
+      <div class="top-icons">Gift</div>
+    </div>
+
+    <!-- PERBAIKAN: Tambah container dengan class gift-content -->
+    <div class="feed gift-content" style="background:#f7f7f7;padding:20px;overflow:auto;">
+      <div style="background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.05);padding:15px;text-align:center;">
+        <h3 style="color:#E50914;margin-bottom:12px;">Amplop Digital atau Kado</h3>
+        <p style="font-size:14px;color:#444;line-height:1.6;">
+          Doa Restu Anda merupakan karunia yang sangat berarti bagi kami, Jika memberi merupakan ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless atau dapat mengirim kado ke alamat berikut: <br>
+        </p>
+
+        <div style="background:#f7f7f7;border-radius:10px;padding:12px;margin:12px 0;">
+          <b>💳 BNI - 1288396416</b><br>
+          A.N. <b>Annisa Shinta Balqis</b><br>
+          <button onclick="copyText('1288396416')" 
+                  style="margin-top:8px;padding:6px 12px;border:none;border-radius:8px;background:#E50914;color:white;cursor:pointer;">
+            Copy Rekening
+          </button>
+        </div>
+        <div style="background:#f7f7f7;border-radius:10px;padding:12px;margin:12px 0;">
+          <b>💳 BNI - 0735236373</b><br>
+          A.N. <b>Fauzul Karim Duriyano</b><br>
+          <button onclick="copyText('0735236373')" 
+                  style="margin-top:8px;padding:6px 12px;border:none;border-radius:8px;background:#E50914;color:white;cursor:pointer;">
+            Copy Rekening
+          </button>
+        </div>
+        <div style="background:#f7f7f7;border-radius:10px;padding:12px;">
+          <div id="alamatTeks">Jl. Banten Indah Permai Blok G4 No 15, Unyur, Serang, Kota Serang, Banten</div>
+          <button onclick="copyText('Jl. Banten Indah Permai Blok G4 No 15, Unyur, Serang, Kota Serang, Banten')" 
+                  style="margin-top:8px;padding:6px 12px;border:none;border-radius:8px;background:#E50914;color:white;cursor:pointer;">
+            Copy Alamat
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="bnav" role="navigation" aria-label="Bottom navigation">
+      <button id="homeBtn3" title="Home">🏠</button>
+      <button id="searchBtn3" title="Maps">🔍</button>
+      <button id="addBtn3" title="Ucapan">💬</button>
+      <button id="playBtn3" title="Amplop Digital">▶️</button>
+      <button id="openProfile3" title="Profile">👤</button>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div id="profileScreen" class="screen">
+    <div class="topbar">
+      <div class="logo-small">Wedding</div>
+      <div class="top-icons">
+        <span style="font-size:20px">+</span>
+        <span style="font-size:20px">☰</span>
+      </div>
+    </div>
+
+    <!-- PERBAIKAN: Layout profil yang lebih terintegrasi -->
+    <div class="profile-content">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-top">
+          <div class="profile-info">
+            <img src="profile.jpg" alt="Profile" class="profile-avatar">
+            <div>
+              <div style="font-weight:700;font-size:18px">Fafa & Iqiss</div>
+              <div style="color:var(--muted);font-size:14px">Fauzul_Balqis_Wedding</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div>
+            <span class="count">6</span>
+            <span class="label">postingan</span>
+          </div>
+          <div>
+            <span class="count">500</span>
+            <span class="label">pengikut</span>
+          </div>
+          <div>
+            <span class="count">2</span>
+            <span class="label">mengikuti</span>
+          </div>
+        </div>
+
+        <div class="profile-bio">
+          <div style="margin-top:8px"></div>
+          <div style="font-size:14px">
+            Berkat ridho Allah SWT dan Orangtua kami, serta bantuan dan dukungan dari keluarga sehingga kami bisa melaksanakan hajat baik kami. <br> 
+            Terima kasih atas dukungan dan doa yang diberikan, semoga kebaikan dibalas oleh Allah SWT.<br>
+            Aamiin...<br>
+            📅 Jumat, 26 Desember 2025<br>
+            💍 Akad Nikah (15.00 - 16.30 WIB)<br>
+            🎉 Resepsi Nikah (17.00 - 21.00 WIB)<br>
+            📌 Joglo Asri SKI - Cilegon <br>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="profile-btn primary">Edit Profil</button>
+          <button class="profile-btn">Bagikan Profil</button>
+        </div>
+      </div>
+
+      <!-- Profile Posts Grid -->
+      <div class="profile-grid" id="profileGrid">
+        <!-- Posts will be dynamically loaded here -->
+      </div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="bnav" role="navigation" aria-label="Bottom navigation">
+      <button id="homeBtn4" title="Home">🏠</button>
+      <button id="searchBtn4" title="Maps">🔍</button>
+      <button id="addBtn4" title="Ucapan">💬</button>
+      <button id="playBtn4" title="Amplop Digital">▶️</button>
+      <button id="openProfile4" title="Profile">👤</button>
+    </div>
+  </div>
+
+  <!-- MESSAGE SCREEN -->
+  <div id="messageScreen" class="screen">
+    <div class="message-screen">
+      <div class="message-header">
+        <button class="message-back-btn" id="messageBackBtn">←</button>
+        <div class="message-title">Message</div>
+      </div>
+      
+      <!-- Admin Controls -->
+      <div class="admin-controls" id="adminControls" style="display: none;">
+        <span>Admin Mode</span>
+        <button class="admin-btn" id="clearAllBtn">Hapus Semua Pesan</button>
+      </div>
+      
+      <div class="messages-container" id="messagesContainer">
+        <div class="no-messages" id="noMessages">Belum ada pesan. Kirim pesan pertama Anda!</div>
+        <!-- Messages will be dynamically added here -->
+      </div>
+      
+      <div class="message-input-container">
+        <input type="text" class="message-input" id="messageInput" placeholder="Input your text and send">
+        <button class="message-send-btn" id="messageSendBtn" disabled>↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORY MODAL -->
+  <div id="storyModal" class="modal-back" tabindex="-1">
+    <div class="modal" role="dialog" aria-modal="true">
+      <img id="storyImg" src="" alt="Story">
+      <div class="meta">
+        <div id="storyTitle" style="font-weight:700"></div>
+        <div id="storySub" style="font-size:13px;color:#ddd;margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE VIEWER -->
+  <div id="viewer" class="viewer" tabindex="-1">
+    <img id="viewerImg" src="" alt="Preview">
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-content">
+      <h3>Hapus Pesan?</h3>
+      <p>Apakah Anda yakin ingin menghapus pesan ini?</p>
+      <div class="confirm-buttons">
+        <button class="confirm-btn confirm-yes" id="confirmYes">Ya, Hapus</button>
+        <button class="confirm-btn confirm-no" id="confirmNo">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- CONFIG ---------- */
+const STORIES = [
+  {id:0, label:'Cerita Anda', type:'add'},
+  {id:1, label:'2021', file:'Highlight2021.jpg', desc:'Kenangan tahun 2021'},
+  {id:2, label:'2022', file:'Highlight2022.jpg', desc:'Kenangan tahun 2022'},
+  {id:3, label:'2023', file:'Highlight2023.jpg', desc:'Kenangan tahun 2023'},
+  {id:4, label:'2024', file:'Highlight2024.jpg', desc:'Kenangan tahun 2024'},
+  {id:5, label:'2025', file:'Highlight2025.jpg', desc:'Kenangan tahun 2025'}
+];
+
+const PROFILE_POSTS = [
+  'awe1.jpg',
+  'awe2.jpg', 
+  'awe3.jpg',
+  'awe4.jpg',
+  'awe5.jpg',
+  'awe6.jpg'
+];
+
+/* ---------- STATE MANAGEMENT ---------- */
+let isLoggedIn = false;
+let messages = [];
+let currentUser = '';
+let messageToDelete = null;
+
+/* ---------- ELEMENTS ---------- */
+const loginScreen = document.getElementById('loginScreen');
+const feedScreen = document.getElementById('feedScreen');
+const mapsScreen = document.getElementById('mapsScreen');
+const giftScreen = document.getElementById('giftScreen');
+const profileScreen = document.getElementById('profileScreen');
+const messageScreen = document.getElementById('messageScreen');
+const loginBtn = document.getElementById('loginBtn');
+const guestInput = document.getElementById('guestInput');
+const storiesRow = document.getElementById('storiesRow');
+const profileGrid = document.getElementById('profileGrid');
+const storyModal = document.getElementById('storyModal');
+const storyImg = document.getElementById('storyImg');
+const storyTitle = document.getElementById('storyTitle');
+const storySub = document.getElementById('storySub');
+const viewer = document.getElementById('viewer');
+const viewerImg = document.getElementById('viewerImg');
+
+// Message screen elements
+const messageBackBtn = document.getElementById('messageBackBtn');
+const messagesContainer = document.getElementById('messagesContainer');
+const noMessages = document.getElementById('noMessages');
+const messageInput = document.getElementById('messageInput');
+const messageSendBtn = document.getElementById('messageSendBtn');
+const adminControls = document.getElementById('adminControls');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const confirmModal = document.getElementById('confirmModal');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
+
+/* ---------- UI helpers ---------- */
+function showScreen(screenId) {
+  // Sembunyikan semua screen
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+  
+  // Tampilkan screen yang dipilih
+  document.getElementById(screenId).classList.add('active');
+}
+
+function el(tag,cls){ 
+  const e = document.createElement(tag); 
+  if(cls) e.className = cls; 
+  return e; 
+}
+
+/* ---------- Stories render ---------- */
+function renderStories(){
+  storiesRow.innerHTML='';
+  STORIES.forEach(s=>{
+    const st = el('div','story');
+    if(s.type==='add'){
+      st.innerHTML = `<div class="story-add">+</div><span>${s.label}</span>`;
+    } else {
+      st.innerHTML = `<div class="story-ring"><img src="${s.file}" alt="${s.label}"></div><span>${s.label}</span>`;
+      st.querySelector('.story-ring').addEventListener('click', ()=> openStory(s));
+    }
+    storiesRow.appendChild(st);
+  });
+}
+
+/* ---------- Profile Posts Render ---------- */
+function renderProfilePosts() {
+  profileGrid.innerHTML = '';
+  PROFILE_POSTS.forEach((post, index) => {
+    const postElement = el('div', 'profile-post');
+    postElement.innerHTML = `<img src="${post}" alt="Post ${index + 1}">`;
+    postElement.addEventListener('click', () => {
+      viewerImg.src = post;
+      viewer.style.display = 'flex';
+    });
+    profileGrid.appendChild(postElement);
+  });
+}
+
+/* ---------- Message Functions ---------- */
+function renderMessages() {
+  messagesContainer.innerHTML = '';
+  
+  if (messages.length === 0) {
+    noMessages.style.display = 'block';
+    return;
+  }
+  
+  noMessages.style.display = 'none';
+  
+  messages.forEach(message => {
+    const messageElement = el('div', 'message');
+    
+    // Check if this is current user's message
+    if (message.sender === currentUser) {
+      messageElement.classList.add('my-message');
+    }
+    
+    const senderElement = el('div', 'message-sender');
+    
+    const senderName = el('span');
+    senderName.textContent = message.sender;
+    
+    const timeElement = el('span', 'message-time');
+    const time = new Date(message.timestamp);
+    timeElement.textContent = time.toLocaleTimeString('id-ID', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    
+    senderElement.appendChild(senderName);
+    senderElement.appendChild(timeElement);
+    
+    const contentElement = el('div', 'message-content');
+    contentElement.textContent = message.content;
+    
+    // Add delete button for user's own messages or admin
+    if (message.sender === currentUser || currentUser === 'admin') {
+      const deleteBtn = el('button', 'delete-btn');
+      deleteBtn.textContent = 'Hapus';
+      deleteBtn.addEventListener('click', () => {
+        showDeleteConfirmation(message.id);
+      });
+      
+      messageElement.appendChild(senderElement);
+      messageElement.appendChild(contentElement);
+      messageElement.appendChild(deleteBtn);
+    } else {
+      messageElement.appendChild(senderElement);
+      messageElement.appendChild(contentElement);
+    }
+    
+    messagesContainer.appendChild(messageElement);
+  });
+  
+  // Scroll to bottom
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function sendMessage() {
+  const content = messageInput.value.trim();
+  
+  if (!content) {
+    alert('Silakan isi pesan terlebih dahulu');
+    messageInput.focus();
+    return;
+  }
+  
+  const newMessage = {
+    id: Date.now(),
+    sender: currentUser,
+    content: content,
+    timestamp: new Date().toISOString()
+  };
+  
+  messages.push(newMessage);
+  saveMessages();
+  renderMessages();
+  
+  // Clear input
+  messageInput.value = '';
+  messageSendBtn.disabled = true;
+}
+
+function deleteMessage(messageId) {
+  messages = messages.filter(message => message.id !== messageId);
+  saveMessages();
+  renderMessages();
+  hideDeleteConfirmation();
+  showNotification('Pesan berhasil dihapus');
+}
+
+function clearAllMessages() {
+  if (confirm('Apakah Anda yakin ingin menghapus semua pesan? Tindakan ini tidak dapat dibatalkan.')) {
+    messages = [];
+    saveMessages();
+    renderMessages();
+    showNotification('Semua pesan berhasil dihapus');
+  }
+}
+
+function showDeleteConfirmation(messageId) {
+  messageToDelete = messageId;
+  confirmModal.style.display = 'flex';
+}
+
+function hideDeleteConfirmation() {
+  messageToDelete = null;
+  confirmModal.style.display = 'none';
+}
+
+function saveMessages() {
+  localStorage.setItem('wedding_messages', JSON.stringify(messages));
+}
+
+function loadMessages() {
+  const savedMessages = localStorage.getItem('wedding_messages');
+  if (savedMessages) {
+    messages = JSON.parse(savedMessages);
+  } else {
+    messages = [];
+  }
+}
+
+function showNotification(text) {
+  const notice = document.createElement('div');
+  notice.textContent = text;
+  notice.className = 'notification';
+  document.body.appendChild(notice);
+  setTimeout(() => notice.remove(), 2000);
+}
+
+/* ---------- Story modal ---------- */
+function openStory(s){
+  storyImg.src = s.file;
+  storyTitle.textContent = s.label;
+  storySub.textContent = `Fauzul & Balqis — ${s.desc}`;
+  storyModal.style.display='flex';
+}
+storyModal.addEventListener('click',(e)=>{ 
+  if(e.target===storyModal) storyModal.style.display='none'; 
+});
+
+/* ---------- Post image viewer ---------- */
+document.querySelectorAll('.post .image').forEach(img=>{
+  img.addEventListener('click', ()=>{
+    const src = getComputedStyle(img).backgroundImage;
+    const urlMatch = src.match(/url\(["']?(.+?)["']?\)/);
+    const url = urlMatch ? urlMatch[1] : '';
+    viewerImg.src = url;
+    viewer.style.display='flex';
+  });
+});
+viewer.addEventListener('click',()=> viewer.style.display='none');
+
+/* ---------- Login behavior ---------- */
+loginBtn.addEventListener('click', ()=>{
+  const name = guestInput.value.trim();
+  if(!name){
+    alert('Silakan isi nama dulu. Contoh: Bpk. Ahmad');
+    guestInput.focus();
+    return;
+  }
+  
+  currentUser = name;
+  localStorage.setItem('wedding_guest', name);
+  isLoggedIn = true;
+  
+  // Show admin controls if user is admin
+  if (name.toLowerCase() === 'admin') {
+    adminControls.style.display = 'flex';
+  } else {
+    adminControls.style.display = 'none';
+  }
+  
+  renderStories();
+  renderProfilePosts();
+  loadMessages();
+  showScreen('feedScreen');
+});
+
+/* ---------- On load ---------- */
+window.addEventListener('load', ()=>{
+  const saved = localStorage.getItem('wedding_guest');
+  if(saved){ 
+    // Hanya isi input field, tapi tetap tampilkan login screen
+    guestInput.value = saved;
+    currentUser = saved;
+    
+    // Show admin controls if user is admin
+    if (saved.toLowerCase() === 'admin') {
+      adminControls.style.display = 'flex';
+    }
+    
+    // Tetap tampilkan login screen, user harus klik login
+    showScreen('loginScreen');
+    renderStories();
+    renderProfilePosts();
+    loadMessages();
+  } else {
+    showScreen('loginScreen');
+    renderStories();
+    renderProfilePosts();
+    loadMessages();
+  }
+});
+
+/* ---------- Like button behavior per post ---------- */
+document.querySelectorAll('.post').forEach(post=>{
+  const likeBtn = post.querySelector('.likeBtn');
+  let liked = false;
+  likeBtn.addEventListener('click', ()=>{
+    liked = !liked;
+    likeBtn.textContent = liked ? '❤️' : '♡';
+  });
+});
+
+/* ---------- Navigation ---------- */
+// Navigasi utama
+document.getElementById('homeBtn').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('feedScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('searchBtn').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('mapsScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  if(isLoggedIn) {
+    renderMessages();
+    showScreen('messageScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('playBtn').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('giftScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('openProfile').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('profileScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+// Navigasi di maps screen
+document.getElementById('homeBtn2').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('feedScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('searchBtn2').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('mapsScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('addBtn2').addEventListener('click', () => {
+  if(isLoggedIn) {
+    renderMessages();
+    showScreen('messageScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('playBtn2').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('giftScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('openProfile2').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('profileScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+// Navigasi di gift screen
+document.getElementById('homeBtn3').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('feedScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('searchBtn3').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('mapsScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('addBtn3').addEventListener('click', () => {
+  if(isLoggedIn) {
+    renderMessages();
+    showScreen('messageScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('playBtn3').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('giftScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('openProfile3').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('profileScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+// Navigasi di profile screen
+document.getElementById('homeBtn4').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('feedScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('searchBtn4').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('mapsScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('addBtn4').addEventListener('click', () => {
+  if(isLoggedIn) {
+    renderMessages();
+    showScreen('messageScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('playBtn4').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('giftScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('openProfile4').addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('profileScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+// Navigasi di message screen
+messageBackBtn.addEventListener('click', () => {
+  if(isLoggedIn) {
+    showScreen('feedScreen');
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+// Message input validation
+messageInput.addEventListener('input', () => {
+  messageSendBtn.disabled = messageInput.value.trim() === '';
+});
+
+// Send message on button click
+messageSendBtn.addEventListener('click', sendMessage);
+
+// Send message on Enter key
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Clear all messages button
+clearAllBtn.addEventListener('click', clearAllMessages);
+
+// Delete confirmation handlers
+confirmYes.addEventListener('click', () => {
+  if (messageToDelete) {
+    deleteMessage(messageToDelete);
+  }
+});
+
+confirmNo.addEventListener('click', hideDeleteConfirmation);
+
+// Close confirmation modal when clicking outside
+confirmModal.addEventListener('click', (e) => {
+  if (e.target === confirmModal) {
+    hideDeleteConfirmation();
+  }
+});
+
+/* ---------- Close modal with Escape ---------- */
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'){
+    storyModal.style.display='none';
+    viewer.style.display='none';
+    hideDeleteConfirmation();
+  }
+});
+
+/* ---------- Copy function ---------- */
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(()=>{
+    showNotification("✅ Teks disalin!");
+  });
+}
+</script>
+</body>
+</html>
